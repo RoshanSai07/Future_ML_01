@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Demand Forecasting Dashboard</title>
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+
+  <body>
+    <aside class="sidebar">
+      <div class="logo">DEMAND AI</div>
+
+      <nav>
+        <a href="/">Dashboard</a>
+
+        <a href="/forecast">Forecasts</a>
+
+        <a href="/predict">Manual Prediction</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <!-- ===================================== -->
+      <!-- HERO -->
+      <!-- ===================================== -->
+
+      <section class="header">
+        <h1>Retail Demand Forecasting Dashboard</h1>
+
+        <p>Revenue Analytics • Forecasting • Inventory Intelligence</p>
+      </section>
+
+      <!-- ===================================== -->
+      <!-- KPI CARDS -->
+      <!-- ===================================== -->
+
+      <section class="cards">
+        <div class="card">
+          <span>Total Revenue</span>
+
+          <h2>₹{{ "{:,.0f}".format(total_revenue) }}</h2>
+        </div>
+
+        <div class="card">
+          <span>Transactions</span>
+
+          <h2>{{ "{:,}".format(total_transactions) }}</h2>
+        </div>
+
+        <div class="card">
+          <span>Customers</span>
+
+          <h2>{{ "{:,}".format(total_customers) }}</h2>
+        </div>
+
+        <div class="card">
+          <span>Products</span>
+
+          <h2>{{ "{:,}".format(total_products) }}</h2>
+        </div>
+
+        <div class="card">
+          <span>Best Model</span>
+
+          <h2>{{ best_model }}</h2>
+        </div>
+
+        <div class="card">
+          <span>Best SMAPE</span>
+
+          <h2>{{ best_smape }}%</h2>
+        </div>
+      </section>
+
+      <!-- ===================================== -->
+      <!-- MODEL COMPARISON -->
+      <!-- ===================================== -->
+
+      <section class="table-section">
+        <div class="section-title">Model Performance</div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Model</th>
+              <th>MAE</th>
+              <th>RMSE</th>
+              <th>SMAPE</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for row in comparison %}
+
+            <tr>
+              <td>{{ row.Model }}</td>
+
+              <td>{{ row.MAE }}</td>
+
+              <td>{{ row.RMSE }}</td>
+
+              <td>{{ row.SMAPE }}%</td>
+            </tr>
+
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ===================================== -->
+      <!-- ACTUAL VS PREDICTED -->
+      <!-- ===================================== -->
+
+      <section class="chart-container">
+        <div class="section-title">Actual vs Predicted Revenue</div>
+
+        <canvas id="actualChart"></canvas>
+      </section>
+
+      <!-- ===================================== -->
+      <!-- DAILY REVENUE -->
+      <!-- ===================================== -->
+
+      <section class="chart-container">
+        <div class="section-title">Daily Revenue Trend</div>
+
+        <canvas id="dailyRevenueChart"></canvas>
+      </section>
+
+      <!-- ===================================== -->
+      <!-- MONTHLY REVENUE -->
+      <!-- ===================================== -->
+
+      <section class="chart-container">
+        <div class="section-title">Monthly Revenue Trend</div>
+
+        <canvas id="monthlyRevenueChart"></canvas>
+      </section>
+
+      <!-- ===================================== -->
+      <!-- COUNTRY REVENUE -->
+      <!-- ===================================== -->
+
+      <section class="chart-container">
+        <div class="section-title">Top Revenue Countries</div>
+
+        <canvas id="countryChart"></canvas>
+      </section>
+
+      <!-- ===================================== -->
+      <!-- FEATURE IMPORTANCE -->
+      <!-- ===================================== -->
+
+      <section class="chart-container">
+        <div class="section-title">What Drives Revenue?</div>
+
+        <canvas id="featureChart"></canvas>
+      </section>
+
+      <!-- ===================================== -->
+      <!-- INSIGHTS -->
+      <!-- ===================================== -->
+
+      <section class="insights">
+        <div class="section-title">Business Insights</div>
+
+        <div class="insight-card">
+          Ensemble model currently delivers the best forecasting accuracy.
+        </div>
+
+        <div class="insight-card">
+          Revenue exhibits strong weekly seasonality patterns.
+        </div>
+
+        <div class="insight-card">
+          Historical sales patterns are heavily influenced by previous week
+          performance.
+        </div>
+
+        <div class="insight-card">
+          Inventory planning should focus on recurring weekly demand cycles.
+        </div>
+      </section>
+    </main>
+
+    <!-- ===================================== -->
+    <!-- DATA -->
+    <!-- ===================================== -->
+
+    <script>
+
+      const forecastData =
+          {{ forecast_json | safe }};
+
+      const dailyData =
+          {{ daily_json | safe }};
+
+      const monthlyData =
+          {{ monthly_json | safe }};
+
+      const countryData =
+          {{ country_json | safe }};
+
+      const featureData =
+          {{ feature_json | tojson }};
+    </script>
+
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+  </body>
+</html>

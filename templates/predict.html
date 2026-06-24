@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Manual Prediction</title>
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+  </head>
+
+  <body>
+    <aside class="sidebar">
+      <div class="logo">DEMAND AI</div>
+
+      <nav>
+        <a href="/">Dashboard</a>
+
+        <a href="/forecast">Forecasts</a>
+
+        <a href="/predict">Manual Prediction</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <section class="header">
+        <h1>Manual Revenue Prediction</h1>
+
+        <p>Predict Revenue, Demand and Restocking Requirements</p>
+      </section>
+
+      <section class="form-container">
+        <div class="section-title">Business Inputs</div>
+
+        <div class="form-grid">
+          <input type="number" id="inventory" placeholder="Current Inventory" />
+
+          <input
+            type="number"
+            id="day_of_week"
+            placeholder="Day Of Week (0-6)"
+          />
+
+          <input type="number" id="day_of_month" placeholder="Day Of Month" />
+
+          <input type="number" id="month" placeholder="Month" />
+
+          <input type="number" id="week_of_year" placeholder="Week Of Year" />
+
+          <input
+            type="number"
+            id="revenue_lag_1"
+            placeholder="Revenue Yesterday"
+          />
+
+          <input
+            type="number"
+            id="revenue_lag_7"
+            placeholder="Revenue Last Week"
+          />
+
+          <input
+            type="number"
+            id="revenue_lag_14"
+            placeholder="Revenue 2 Weeks Ago"
+          />
+
+          <input
+            type="number"
+            id="orders_lag_1"
+            placeholder="Orders Yesterday"
+          />
+
+          <input
+            type="number"
+            id="customers_lag_1"
+            placeholder="Customers Yesterday"
+          />
+
+          <input
+            type="number"
+            id="quantity_lag_1"
+            placeholder="Quantity Sold Yesterday"
+          />
+
+          <input
+            type="number"
+            id="aov_lag_1"
+            placeholder="Average Order Value"
+          />
+        </div>
+
+        <button id="predictBtn">Predict</button>
+      </section>
+
+      <section class="results-grid">
+        <div class="result-card">
+          <span> Predicted Revenue </span>
+
+          <h2 id="predictedRevenue">--</h2>
+        </div>
+
+        <div class="result-card">
+          <span> Expected Demand </span>
+
+          <h2 id="expectedDemand">--</h2>
+        </div>
+
+        <div class="result-card">
+          <span> Current Inventory </span>
+
+          <h2 id="currentInventory">--</h2>
+        </div>
+
+        <div class="result-card">
+          <span> Restock Required </span>
+
+          <h2 id="restockNeeded">--</h2>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const predictBtn = document.getElementById("predictBtn");
+
+      predictBtn.addEventListener("click", async () => {
+        const payload = {
+          inventory: document.getElementById("inventory").value,
+
+          day_of_week: document.getElementById("day_of_week").value,
+
+          day_of_month: document.getElementById("day_of_month").value,
+
+          month: document.getElementById("month").value,
+
+          week_of_year: document.getElementById("week_of_year").value,
+
+          revenue_lag_1: document.getElementById("revenue_lag_1").value,
+
+          revenue_lag_7: document.getElementById("revenue_lag_7").value,
+
+          revenue_lag_14: document.getElementById("revenue_lag_14").value,
+
+          orders_lag_1: document.getElementById("orders_lag_1").value,
+
+          customers_lag_1: document.getElementById("customers_lag_1").value,
+
+          quantity_lag_1: document.getElementById("quantity_lag_1").value,
+
+          aov_lag_1: document.getElementById("aov_lag_1").value,
+        };
+
+        const response = await fetch("/api/predict", {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          body: JSON.stringify(payload),
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          document.getElementById("predictedRevenue").innerText =
+            "₹ " + result.predicted_revenue.toLocaleString();
+
+          document.getElementById("expectedDemand").innerText =
+            result.expected_demand;
+
+          document.getElementById("currentInventory").innerText =
+            result.current_inventory;
+
+          document.getElementById("restockNeeded").innerText =
+            result.restock_needed;
+        } else {
+          alert(result.message);
+        }
+      });
+    </script>
+  </body>
+</html>

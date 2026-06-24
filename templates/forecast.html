@@ -2,134 +2,74 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
     <title>Future Forecasts</title>
-
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/style.css') }}"
     />
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
-
   <body>
     <aside class="sidebar">
       <div class="logo">DEMAND AI</div>
-
       <nav>
         <a href="/">Dashboard</a>
-
         <a href="/forecast">Forecasts</a>
-
         <a href="/predict">Manual Prediction</a>
       </nav>
     </aside>
-
     <main class="main">
       <section class="header">
         <h1>Future Revenue Forecast</h1>
-
         <p>Next 30 Days Revenue Projection</p>
       </section>
-
       <section class="cards">
         <div class="card">
           <span> Total Forecast Revenue </span>
-
           <h2>₹{{ "{:,.0f}".format(total_forecast) }}</h2>
         </div>
-
         <div class="card">
           <span> Forecast Days </span>
-
           <h2>{{ forecasts|length }}</h2>
         </div>
       </section>
 
       <section class="chart-container">
         <div class="section-title">Revenue Forecast Trend</div>
-
         <canvas id="forecastChart"></canvas>
       </section>
-
       <section class="table-section">
         <div class="section-title">Forecast Table</div>
-
         <table>
           <thead>
             <tr>
               <th>Date</th>
-
               <th>Forecast Revenue</th>
             </tr>
           </thead>
-
           <tbody>
             {% for row in forecasts %}
-
             <tr>
               <td>{{ row.Date }}</td>
-
               <td>₹{{ "{:,.0f}".format(row["Forecasted Revenue"]) }}</td>
             </tr>
-
             {% endfor %}
           </tbody>
         </table>
       </section>
     </main>
-
     <script>
-
       const forecastData = {{ forecasts|tojson }};
-
-      const labels =
-          forecastData.map(
-              item => item.Date
-          );
-
-      const values =
-          forecastData.map(
-              item => item["Forecasted Revenue"]
-          );
-
-      const ctx =
-          document
-          .getElementById(
-              "forecastChart"
-          );
-
+      const labels =forecastData.map(item => item.Date);
+      const values =forecastData.map(item => item["Forecasted Revenue"]);
+      const ctx =document.getElementById("forecastChart");
       new Chart(ctx, {
-
           type: "line",
-
-          data: {
-
-              labels: labels,
-
-              datasets: [{
-
-                  label:
-                  "Forecast Revenue",
-
-                  data: values,
-
-                  borderWidth: 2,
-
-                  tension: 0.3
-
-              }]
+          data: {labels: labels,
+              datasets: [{label:"Forecast Revenue",data: values,borderWidth: 2,tension: 0.3}]
           },
-
-          options: {
-
-              responsive: true,
-
-              maintainAspectRatio: false
-          }
+          options: {responsive: true,maintainAspectRatio: false}
       });
     </script>
   </body>
